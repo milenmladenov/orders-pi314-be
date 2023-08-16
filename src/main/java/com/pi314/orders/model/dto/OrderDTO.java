@@ -1,0 +1,23 @@
+package com.pi314.orders.model.dto;
+
+import com.pi314.orders.enums.*;
+import lombok.*;
+
+import java.time.*;
+import java.util.*;
+@Data
+public class OrderDTO {
+  private Long id;
+
+  private List<GroupDTO> groups;
+
+  private UserDTO user;
+
+  private OrderStatus status;
+
+  private OrderType type;
+
+  private LocalDate createdAt;
+  private Double totalPrice;
+
+}

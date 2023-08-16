@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Order</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-4">New Order</h1>
+    <form th:action="@{/new-order}" th:object="${orderRequestDTO}" method="post" class="space-y-4">
+        <!-- Loop through the groups in OrderRequestDTO -->
+        <div th:each="group, groupIndex : *{groups}">
+            <!-- Group Heading -->
+            <h2 class="text-xl font-bold mb-2">Group [[${groupIndex.index + 1}]]</h2>
+
+            <!-- Door Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Door Name:</label>
+                <input type="text" th:field="*{groups[__${groupIndex.index}__].door.name}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Model Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Model Name:</label>
+                <input type="text" th:field="*{groups[__${groupIndex.index}__].model.name}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Folio Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Folio Name:</label>
+                <input type="text" th:field="*{groups[__${groupIndex.index}__].folio.name}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Handle Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Handle Name:</label>
+                <input type="text" th:field="*{groups[__${groupIndex.index}__].handle.name}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Profil Name -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Profil Name:</label>
+                <input type="text" th:field="*{groups[__${groupIndex.index}__].profil.name}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Height -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Height:</label>
+                <input type="number" th:field="*{groups[__${groupIndex.index}__].height}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Width -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Width:</label>
+                <input type="number" th:field="*{groups[__${groupIndex.index}__].width}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Number -->
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700">Number:</label>
+                <input type="number" th:field="*{groups[__${groupIndex.index}__].number}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <!-- Line break between groups -->
+            <hr class="my-4">
+        </div>
+
+        <!-- Total Price -->
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Total Price:</label>
+            <span th:if="${orderResponseDTO != null}" th:text="${orderResponseDTO.totalPrice}" class="block mt-1"></span>
+            <span th:unless="${orderResponseDTO != null}">N/A</span>
+        </div>
+
+        <!-- CSRF Token -->
+        <input th:if="${_csrf != null}" type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded">
+            Submit
+        </button>
+    </form>
+</div>
+</body>
+</html>
