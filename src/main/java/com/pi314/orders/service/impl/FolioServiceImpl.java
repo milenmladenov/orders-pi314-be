@@ -29,4 +29,9 @@ public class FolioServiceImpl implements FolioService {
   public Folio findById(Long folioId) {
     return folioRepository.findById(folioId).orElseThrow();
   }
+
+  @Override
+  public List<Folio> findAll() {
+    return folioRepository.findAll();
+  }
 }

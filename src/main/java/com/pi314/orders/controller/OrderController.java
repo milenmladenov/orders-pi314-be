@@ -28,6 +28,11 @@ public class OrderController {
     return orderService.preflightNewOrder(orderRequestDTO);
   }
 
+  @PostMapping("/{orderId}/change-status")
+  public void changeOrderStatus(@PathVariable Long orderId,@RequestParam OrderStatus orderStatus){
+    orderService.changeOrderStatus(orderId,orderStatus);
+  }
+
 
 
   @GetMapping("/all")

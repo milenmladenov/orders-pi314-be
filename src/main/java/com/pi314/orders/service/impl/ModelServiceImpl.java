@@ -28,4 +28,9 @@ public class ModelServiceImpl implements ModelService {
   public Model findById(Long modelId) {
     return modelRepository.findById(modelId).orElseThrow();
   }
+
+  @Override
+  public List<Model> findAll() {
+    return modelRepository.findAll();
+  }
 }

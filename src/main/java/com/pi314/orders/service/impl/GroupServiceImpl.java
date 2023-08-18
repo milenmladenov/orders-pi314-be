@@ -71,7 +71,8 @@ public class GroupServiceImpl implements GroupService {
             .number(groupDTO.getNumber())
             .isBothSidesLaminated(groupDTO.isBothSidesLaminated())
             .groupTotalPrice(groupTotalPrice)
-            .groupTotalSqrt((((double) groupDTO.getHeight() / 1000) * ((double) groupDTO.getWidth() / 1000)))
+            .groupTotalSqrt(
+                (((double) groupDTO.getHeight() / 1000) * ((double) groupDTO.getWidth() / 1000)))
             .build();
     return groupRepository.save(group);
   }
@@ -103,5 +104,15 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public List<Group> findById(Long id) {
     return groupRepository.findById(id).stream().toList();
+  }
+
+  @Override
+  public Products returnAllProducts() {
+    List<DoorDTO> doors = modelMapperService.mapList(doorService.allDoors(), DoorDTO.class);
+    List<ModelDTO> models = modelMapperService.mapList(modelService.findAll(), ModelDTO.class);
+    List<HandleDTO> handles = modelMapperService.mapList(handleService.findAll(), HandleDTO.class);
+    List<FolioDTO> folios = modelMapperService.mapList(folioService.findAll(), FolioDTO.class);
+    List<ProfilDTO> profils = modelMapperService.mapList(profilService.findAll(), ProfilDTO.class);
+    return new Products(doors, models, handles, folios, profils);
   }
 }

@@ -22,4 +22,6 @@ public interface GroupService {
     GroupDTO buildGroupDTO (Long doorId,Long modelId,Long handleId,Long folioId,Long profilId,Group group);
 
     List<Group> findById(Long id);
+
+    Products returnAllProducts();
 }

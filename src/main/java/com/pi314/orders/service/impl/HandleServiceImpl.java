@@ -6,6 +6,8 @@ import com.pi314.orders.service.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 public class HandleServiceImpl implements HandleService {
@@ -18,5 +20,10 @@ public class HandleServiceImpl implements HandleService {
     @Override
     public Handle findById(Long handleId) {
         return handleRepository.findById(handleId).orElseThrow();
+    }
+
+    @Override
+    public List<Handle> findAll() {
+        return handleRepository.findAll();
     }
 }

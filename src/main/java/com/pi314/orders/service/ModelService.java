@@ -12,4 +12,6 @@ public interface ModelService {
     void bulkImportModels(List<ModelDTO> models);
 
     Model findById(Long modelId);
+
+    List<Model> findAll();
 }

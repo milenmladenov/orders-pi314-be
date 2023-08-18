@@ -104,7 +104,14 @@ public class OrderServiceImpl implements OrderService {
         .collect(Collectors.toList());
   }
 
-  @Override
+    @Override
+    public void changeOrderStatus(Long orderId, OrderStatus status) {
+    Order order = orderRepository.findById(orderId).orElseThrow();
+    order.setStatus(status);
+    orderRepository.save(order);
+    }
+
+    @Override
   public OrderDTO returnOrderById(Long orderId) {
     List<Order> order = orderRepository.findById(orderId).stream().toList();
     List<OrderDTO> allOrders = modelMapperService.mapList(order, OrderDTO.class);

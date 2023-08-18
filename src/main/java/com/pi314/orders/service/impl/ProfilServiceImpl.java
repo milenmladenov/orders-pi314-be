@@ -6,6 +6,8 @@ import com.pi314.orders.service.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
+import java.util.*;
+
 @Service
 @RequiredArgsConstructor
 public class ProfilServiceImpl implements ProfilService {
@@ -20,4 +22,9 @@ public class ProfilServiceImpl implements ProfilService {
   public Profil findById(Long profilId) {
     return profilRepository.findById(profilId).orElseThrow();
   }
+
+    @Override
+    public List<Profil> findAll() {
+        return profilRepository.findAll();
+    }
 }

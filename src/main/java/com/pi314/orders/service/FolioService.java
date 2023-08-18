@@ -11,4 +11,6 @@ public interface FolioService {
     void bulkImportFolios(List<FolioDTO> folios);
 
     Folio findById(Long folioId);
+
+    List<Folio> findAll();
 }

@@ -18,5 +18,7 @@ public interface OrderService {
 
     List<OrderDTO> returnAllOrdersPerUser();
 
+    void changeOrderStatus(Long orderId, OrderStatus status);
+
     OrderDTO returnOrderById(Long orderId);
 }
