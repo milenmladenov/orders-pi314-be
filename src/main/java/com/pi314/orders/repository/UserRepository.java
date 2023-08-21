@@ -7,7 +7,7 @@ import java.util.*;
 
 public interface UserRepository extends JpaRepository<User, Long> {
   User findByEmail(String email);
-
+//
   Optional<User> findByUsername(String username);
 
   boolean existsByUsername(String username);
