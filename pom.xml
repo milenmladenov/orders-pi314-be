@@ -14,7 +14,7 @@
 	<name>orders</name>
 	<description>Order app for Pi314 needs</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>19</java.version>
 		<jjwt.version>0.11.5</jjwt.version>
 	</properties>
 	<dependencies>
