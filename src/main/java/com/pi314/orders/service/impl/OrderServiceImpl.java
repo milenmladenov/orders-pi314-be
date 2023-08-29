@@ -12,6 +12,9 @@ import java.util.stream.*;
 import lombok.*;
 import org.springframework.stereotype.*;
 
+import static com.pi314.orders.enums.UserRole.ADMIN;
+import static com.pi314.orders.enums.UserRole.USER;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -81,14 +84,15 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<OrderDTO> returnAllOrders() {
     List<Order> allOrdersFromDB = new ArrayList<>();
-    if (Objects.equals(getLoggedUser().getRole(), "ADMIN")) {
+    if (Objects.equals(getLoggedUser().getRole(), ADMIN.toString())) {
       allOrdersFromDB = orderRepository.findAll();
     }
-    if (Objects.equals(getLoggedUser().getRole(), "USER")) {
+    if (Objects.equals(getLoggedUser().getRole(), USER.toString())) {
       allOrdersFromDB = orderRepository.findByUser(getLoggedUser());
     }
     List<OrderDTO> allOrders = modelMapperService.mapList(allOrdersFromDB, OrderDTO.class);
     mapOrderGroups(allOrdersFromDB, allOrders);
+    System.out.println(getLoggedUser().getRole());
     return allOrders.stream()
         .sorted(Comparator.comparing(OrderDTO::getId).reversed())
         .collect(Collectors.toList());

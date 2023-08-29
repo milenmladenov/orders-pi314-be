@@ -14,7 +14,17 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping
-  public List<UserDTO> getAllCustomers() {
-    return userService.getAllCustomers();
+  public List<UserDTO> getAllCustomers(@RequestParam(required = false)String searchParam) {
+    return userService.getAllCustomers(searchParam);
+  }
+
+  @GetMapping("/{customerId}")
+  public UserDTO getCustomerById(@PathVariable Long customerId) {
+    return userService.findById(customerId);
+  }
+
+  @PostMapping("/{customerId}/set-discount/{discount}")
+  public void setCustomerDiscount(@PathVariable Long customerId, @PathVariable Integer discount) {
+    userService.setCustomerDiscount(customerId, discount);
   }
 }

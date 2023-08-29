@@ -3,9 +3,8 @@ package com.pi314.orders.service.impl;
 import com.pi314.orders.exception.*;
 import com.pi314.orders.model.dto.UserDTO;
 import com.pi314.orders.model.entity.User;
-import com.pi314.orders.repository.UserRepository;
+import com.pi314.orders.repository.*;
 import com.pi314.orders.service.*;
-
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.*;
@@ -16,13 +15,11 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final ModelMapperService modelMapperService;
+  private final UserRepositoryCustom userRepositoryCustom;
 
   @Override
   public User register(UserDTO userInfo) {
-    User user =
-        User.builder()
-            .email(userInfo.getEmail())
-            .username(userInfo.getUsername()).build();
+    User user = User.builder().email(userInfo.getEmail()).username(userInfo.getUsername()).build();
     return userRepository.save(user);
   }
 
@@ -72,8 +69,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<UserDTO> getAllCustomers() {
-    return modelMapperService.mapList(userRepository.findAll(), UserDTO.class);
+  public List<UserDTO> getAllCustomers(String searchParam) {
+    if (searchParam == null){
+      return modelMapperService.mapList(userRepository.findAll(), UserDTO.class);
+    }
+    List<User> users = userRepositoryCustom.filterUsers(searchParam);
+    return modelMapperService.mapList(users, UserDTO.class);
   }
 
   @Override
@@ -84,5 +85,17 @@ public class UserServiceImpl implements UserService {
   @Override
   public void deleteUser(User user) {
     userRepository.delete(user);
+  }
+
+  @Override
+  public UserDTO findById(Long customerId) {
+    return modelMapperService.map(userRepository.findById(customerId).orElseThrow(), UserDTO.class);
+  }
+
+  @Override
+  public void setCustomerDiscount(Long customerId, Integer discount) {
+    User user = userRepository.findById(customerId).orElseThrow();
+    user.setAppliedDiscount(discount);
+    userRepository.save(user);
   }
 }

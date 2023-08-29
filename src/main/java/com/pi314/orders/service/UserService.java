@@ -26,10 +26,13 @@ public interface UserService{
 
     User validateAndGetUserByUsername(String username);
 
-    List<UserDTO> getAllCustomers();
+    List<UserDTO> getAllCustomers(String searchParam);
 
     User saveUser(User user);
 
     void deleteUser(User user);
 
+    UserDTO findById(Long customerId);
+
+    void setCustomerDiscount(Long customerId, Integer discount);
 }

@@ -5,7 +5,7 @@ import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
 import com.pi314.orders.service.*;
 import lombok.*;
-import org.springframework.stereotype.*;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -28,8 +28,8 @@ public class OrderController {
     return orderService.preflightNewOrder(orderRequestDTO);
   }
 
-  @PostMapping("/{orderId}/change-status")
-  public void changeOrderStatus(@PathVariable Long orderId,@RequestParam OrderStatus orderStatus){
+  @PostMapping("/{orderId}/change-status/{orderStatus}")
+  public void changeOrderStatus(@PathVariable Long orderId,@PathVariable OrderStatus orderStatus){
     orderService.changeOrderStatus(orderId,orderStatus);
   }
 

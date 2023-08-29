@@ -11,7 +11,7 @@ public class UserDTO {
   private String phone;
   private String companyName;
   private String companyAddress;
-
+private Integer appliedDiscount;
   private String communicationName;
   private String bulstat;
   private String city;

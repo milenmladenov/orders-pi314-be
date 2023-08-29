@@ -1,5 +1,5 @@
-INSERT INTO model (id, name, price)
-VALUES
+insert into model (id, name, price)
+values
     (133, 'А1108', 5.00),   -- Starting with 'A' - price: 5
     (123, 'Без модел A100', 5.00),
     (125, 'A1201', 5.00),
@@ -118,14 +118,14 @@ VALUES
     (118, 'D1106', 77.50);
     (11, 'A806', 5.00),
 
-INSERT INTO door (id, name,price)
-VALUES
+insert into door (id, name,price)
+values
     (1, 'Мембранна вратичка',32.5),
     (3, 'Двустранно грундиран МДФ',62.5),
     (7, 'Фурнирован МДФ',115);
 
-INSERT INTO folio (id, name, price)
-VALUES
+insert into folio (id, name, price)
+values
     (754, 'U1001-2', 25),
     (756, 'U1003-2 не е налично.', 25),
     (1, 'U1004-2 не е налично.', 25),
@@ -258,4 +258,15 @@ VALUES
     (125, 'Y7077-1', 99.167),
     (37, 'Z3006-2', 130);
 
+insert into handle (id, name,price)
+values
+    (1, 'Без Дръжка', 0.0),
+    (2, 'дръжка H1', 0.0);
 
+insert into profil (id, name,price)
+values
+    (1, 'R1',0),
+    (2, 'R2',0),
+    (3, 'R3',0),
+    (4, 'R4',0),
+    (5, 'R5',0),;
