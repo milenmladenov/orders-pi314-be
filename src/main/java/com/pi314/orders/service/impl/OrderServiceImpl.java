@@ -1,5 +1,8 @@
 package com.pi314.orders.service.impl;
 
+import static com.pi314.orders.enums.UserRole.ADMIN;
+import static com.pi314.orders.enums.UserRole.USER;
+
 import com.pi314.orders.enums.*;
 import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
@@ -11,9 +14,6 @@ import java.util.*;
 import java.util.stream.*;
 import lombok.*;
 import org.springframework.stereotype.*;
-
-import static com.pi314.orders.enums.UserRole.ADMIN;
-import static com.pi314.orders.enums.UserRole.USER;
 
 @Service
 @RequiredArgsConstructor
@@ -51,10 +51,15 @@ public class OrderServiceImpl implements OrderService {
       groups.add(savedGroup);
     }
 
+    Double handlePrice =
+        groupService.getHandlePrice(orderRequestDTO.getGroups().get(0).getHandle().getName());
+
     OrderResponseDTO orderResponseDTO =
         new OrderResponseDTO(
             orderRequestDTO.getGroups(),
-            calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice());
+            calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
+            getLoggedUser().getAppliedDiscount(),
+            handlePrice);
     Order order =
         Order.builder()
             .user(getLoggedUser())
@@ -71,9 +76,19 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public OrderResponseDTO preflightNewOrder(OrderRequestDTO orderRequestDTO) {
+    DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+    Double handlePrice =
+        Double.parseDouble(
+            decimalFormat.format(
+                groupService.getHandlePrice(
+                    orderRequestDTO.getGroups().get(0).getHandle().getName())));
+
     return new OrderResponseDTO(
         orderRequestDTO.getGroups(),
-        calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice());
+        calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
+        getLoggedUser().getAppliedDiscount(),
+        handlePrice);
   }
 
   @Override
@@ -108,14 +123,14 @@ public class OrderServiceImpl implements OrderService {
         .collect(Collectors.toList());
   }
 
-    @Override
-    public void changeOrderStatus(Long orderId, OrderStatus status) {
+  @Override
+  public void changeOrderStatus(Long orderId, OrderStatus status) {
     Order order = orderRepository.findById(orderId).orElseThrow();
     order.setStatus(status);
     orderRepository.save(order);
-    }
+  }
 
-    @Override
+  @Override
   public OrderDTO returnOrderById(Long orderId) {
     List<Order> order = orderRepository.findById(orderId).stream().toList();
     List<OrderDTO> allOrders = modelMapperService.mapList(order, OrderDTO.class);
@@ -201,6 +216,9 @@ public class OrderServiceImpl implements OrderService {
       groupList.add(groupDTO);
       group.setGroupTotalPrice(Double.parseDouble(decimalFormat.format(groupTotalPrice * 1.2)));
       groupTotalPrices.add(group.getGroupTotalPrice());
+      if (group.isBothSidesLaminated()) {
+        groupTotalPrice *= 1.9;
+      }
       orderTotalPrice += groupTotalPrice;
     }
     orderRequestDTO.setGroups(groupList);
@@ -209,59 +227,31 @@ public class OrderServiceImpl implements OrderService {
       orderTotalPrice *= 1.3;
     }
 
+    if (orderType == OrderType.BY_USER) {
+      double discount = orderTotalPrice * 0.05;
+      orderTotalPrice -= discount;
+    }
+    if (getLoggedUser().getAppliedDiscount() != null) {
+      System.out.println("Order total price before discount : " + orderTotalPrice);
+      double discount = getLoggedUser().getAppliedDiscount() * 0.01;
+      System.out.println("User discount" + discount);
+      double customerAppliedDiscount =
+          orderTotalPrice * (getLoggedUser().getAppliedDiscount() * 0.01);
+      System.out.println("Discounted amount" + customerAppliedDiscount);
+      System.out.println(Double.parseDouble(decimalFormat.format(customerAppliedDiscount)));
+      orderTotalPrice -= customerAppliedDiscount;
+      System.out.println("Price after discount" + orderTotalPrice);
+      System.out.println(Double.parseDouble(decimalFormat.format(orderTotalPrice)));
+    }
+
     double totalPriceWithVAT = orderTotalPrice * 1.2;
+    System.out.println(
+        "Price after vat" + Double.parseDouble(decimalFormat.format(totalPriceWithVAT)));
+
     prices.setOrderTotalPrice(Double.parseDouble(decimalFormat.format(totalPriceWithVAT)));
     prices.setGroupTotalPrices(groupTotalPrices);
     return prices;
   }
-
-  //  private Double calculateGroupTotalPrice(OrderRequestDTO orderRequestDTO) {
-  //    DecimalFormat decimalFormat = new DecimalFormat("#.00");
-  //    double groupTotalPrice = 0;
-  //    List<GroupDTO> groupList = new ArrayList<>();
-  //    for (GroupDTO group : orderRequestDTO.getGroups()) {
-  //      GroupDTO groupDTO =
-  //          groupService.createGroup(
-  //              group.getDoor().getName(),
-  //              group.getModel().getName(),
-  //              group.getHandle().getName(),
-  //              group.getFolio().getName(),
-  //              group.getProfil().getName(),
-  //              group.getHeight(),
-  //              group.getWidth(),
-  //              group.getNumber(),
-  //              group.getDetailType(),
-  //              group.isBothSidesLaminated());
-  //
-  //      double height = groupDTO.getHeight() / 1000.0;
-  //      double width = groupDTO.getWidth() / 1000.0;
-  //      double squareMeters = height * width;
-  //
-  //      double doorPrice = groupDTO.getDoor() != null ? groupDTO.getDoor().getPrice() : 0;
-  //      double modelPrice = groupDTO.getModel() != null ? groupDTO.getModel().getPrice() : 0;
-  //      double folioPrice = groupDTO.getFolio() != null ? groupDTO.getFolio().getPrice() : 0;
-  //      double handlePrice = groupDTO.getHandle() != null ? groupDTO.getHandle().getPrice() : 0;
-  //      double profilPrice = groupDTO.getProfil() != null ? groupDTO.getProfil().getPrice() : 0;
-  //
-  //      if (!kornizi.contains(groupDTO.getDetailType())
-  //          && !pilastri.contains(groupDTO.getDetailType())) {
-  //        groupTotalPrice +=
-  //            ((squareMeters * (doorPrice + modelPrice + folioPrice)) + handlePrice + profilPrice)
-  //                * groupDTO.getNumber();
-  //      }
-  //
-  //      if (kornizi.contains(groupDTO.getDetailType())) {
-  //        groupTotalPrice += groupDTO.getNumber() * 76;
-  //      }
-  //      if (pilastri.contains(groupDTO.getDetailType())) {
-  //        groupTotalPrice += height * 12;
-  //      }
-  //      groupList.add(groupDTO);
-  //      group.setGroupTotalPrice(Double.parseDouble(decimalFormat.format(groupTotalPrice * 1.2)));
-  //    }
-  //    orderRequestDTO.setGroups(groupList);
-  //    return Double.parseDouble(decimalFormat.format(groupTotalPrice));
-  //  }
 
   private OrderType setOrderType() {
     if (getLoggedUser().getRole().equals("ADMIN")) {

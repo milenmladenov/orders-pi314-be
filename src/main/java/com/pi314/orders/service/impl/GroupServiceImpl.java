@@ -115,4 +115,10 @@ public class GroupServiceImpl implements GroupService {
     List<ProfilDTO> profils = modelMapperService.mapList(profilService.findAll(), ProfilDTO.class);
     return new Products(doors, models, handles, folios, profils);
   }
+
+  @Override
+  public Double getHandlePrice(String handleName) {
+    Handle handle = handleService.findByName(handleName);
+    return handle.getPrice();
+  }
 }
