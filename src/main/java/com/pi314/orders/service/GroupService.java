@@ -14,8 +14,9 @@ public interface GroupService {
       String profilName,
       Long height,
       Long width,
+      Long length,
       Double number,
-      String detailType,
+      TypeDTO detailType,
       boolean isBothSidesLaminated);
 
   Group save(GroupDTO groupDTO, double groupTotalPrice);

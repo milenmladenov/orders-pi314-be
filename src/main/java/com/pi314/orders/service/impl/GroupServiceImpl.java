@@ -16,6 +16,7 @@ public class GroupServiceImpl implements GroupService {
   private final FolioService folioService;
   private final HandleService handleService;
   private final ProfilService profilService;
+  private final TypeService typeService;
   private final GroupRepository groupRepository;
   private final ModelMapperService modelMapperService;
 
@@ -28,8 +29,9 @@ public class GroupServiceImpl implements GroupService {
       String profilName,
       Long height,
       Long width,
+      Long length,
       Double number,
-      String detailType,
+      TypeDTO detailType,
       boolean isBothSidesLaminated) {
     Door door = doorService.findByName(doorName);
     Model model = modelService.findByName(modelName);
@@ -46,6 +48,7 @@ public class GroupServiceImpl implements GroupService {
         .detailType(detailType)
         .height(height)
         .width(width)
+            .length(length)
         .number(number)
         .isBothSidesLaminated(isBothSidesLaminated)
         .build();
@@ -58,6 +61,7 @@ public class GroupServiceImpl implements GroupService {
     Handle handle = handleService.findByName(groupDTO.getHandle().getName());
     Folio folio = folioService.findByName(groupDTO.getFolio().getName());
     Profil profil = profilService.findByName(groupDTO.getProfil().getName());
+    Type detailType = typeService.save(groupDTO);
     Group group =
         Group.builder()
             .modelId(model.getId())
@@ -65,15 +69,16 @@ public class GroupServiceImpl implements GroupService {
             .profilId(profil.getId())
             .folioId(folio.getId())
             .handleId(handle.getId())
-            .detailType(groupDTO.getDetailType())
             .height(groupDTO.getHeight())
             .width(groupDTO.getWidth())
+                .length(groupDTO.getLength())
             .number(groupDTO.getNumber())
             .isBothSidesLaminated(groupDTO.isBothSidesLaminated())
             .groupTotalPrice(groupTotalPrice)
             .groupTotalSqrt(
                 (((double) groupDTO.getHeight() / 1000) * ((double) groupDTO.getWidth() / 1000)))
             .build();
+    group.setDetailType(detailType);
     return groupRepository.save(group);
   }
 
@@ -93,9 +98,10 @@ public class GroupServiceImpl implements GroupService {
         .profil(modelMapperService.map(profil, ProfilDTO.class))
         .height(group.getHeight())
         .width(group.getWidth())
+        .length(group.getLength())
         .matPrice(group.getMatPrice())
         .groupTotalPrice(group.getGroupTotalPrice())
-        .detailType(group.getDetailType())
+        .detailType(modelMapperService.map(group.getDetailType(), TypeDTO.class))
         .isBothSidesLaminated(group.isBothSidesLaminated())
         .number(group.getNumber())
         .build();

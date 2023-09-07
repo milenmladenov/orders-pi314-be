@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService {
   private final UserService userService;
   private final OrderRepository orderRepository;
   private final GroupService groupService;
-  List<String> kornizi = List.of("Корниз - К1", "Корниз - К2", "Корниз - К3");
+  List<String> kornizi = List.of("К1 – 68мм височина", "К2 – 70мм височина", "К3 – 80мм височина");
   List<String> pilastri =
       List.of(
           "Пиластър - P1",
@@ -173,6 +173,7 @@ public class OrderServiceImpl implements OrderService {
     Prices prices = new Prices();
     List<Double> groupTotalPrices = new ArrayList<>();
     double orderTotalPrice = 0;
+    double totalSquareMeters = 0;
 
     List<GroupDTO> groupList = new ArrayList<>();
     for (GroupDTO group : orderRequestDTO.getGroups()) {
@@ -186,31 +187,37 @@ public class OrderServiceImpl implements OrderService {
               group.getProfil().getName(),
               group.getHeight(),
               group.getWidth(),
+              group.getLength(),
               group.getNumber(),
               group.getDetailType(),
               group.isBothSidesLaminated());
 
       double height = group.getHeight() / 1000.0;
       double width = group.getWidth() / 1000.0;
-      double squareMeters = height * width;
-
+      double squareMeters = (height * width) * groupDTO.getNumber() ;
+      totalSquareMeters += squareMeters ;
+      System.out.println(totalSquareMeters);
       double doorPrice = groupDTO.getDoor() != null ? groupDTO.getDoor().getPrice() : 0;
       double modelPrice = groupDTO.getModel() != null ? groupDTO.getModel().getPrice() : 0;
       double folioPrice = groupDTO.getFolio() != null ? groupDTO.getFolio().getPrice() : 0;
       double handlePrice = groupDTO.getHandle() != null ? groupDTO.getHandle().getPrice() : 0;
       double profilPrice = groupDTO.getProfil() != null ? groupDTO.getProfil().getPrice() : 0;
 
-      if (!kornizi.contains(groupDTO.getDetailType())
-          && !pilastri.contains(groupDTO.getDetailType())) {
+      if (!groupDTO.getDetailType().getMaterial().equals("Корниз")
+          && !(groupDTO.getDetailType().getMaterial().equals("Пиластър"))){
         groupTotalPrice +=
             ((squareMeters * (doorPrice + modelPrice + folioPrice)) + handlePrice + profilPrice)
-                * groupDTO.getNumber();
+                ;
       }
 
-      if (kornizi.contains(groupDTO.getDetailType())) {
-        groupTotalPrice += groupDTO.getNumber() * 76;
-      }
-      if (pilastri.contains(groupDTO.getDetailType())) {
+      if (groupDTO.getDetailType().getMaterial().equals("Корниз") ){
+        if (groupDTO.getLength() == 2360) {
+        groupTotalPrice += groupDTO.getNumber() * 76;}
+        if (group.getLength() == 1160){
+          groupTotalPrice += groupDTO.getNumber() * 38;}
+        }
+
+      if (groupDTO.getDetailType().getMaterial().equals("Пиластър") ) {
         groupTotalPrice += height * 12;
       }
       groupList.add(groupDTO);
@@ -223,7 +230,7 @@ public class OrderServiceImpl implements OrderService {
     }
     orderRequestDTO.setGroups(groupList);
 
-    if (orderType == OrderType.BY_HAND || orderType == OrderType.IMPORTED) {
+    if (totalSquareMeters <= 1.5) {
       orderTotalPrice *= 1.3;
     }
 
@@ -232,16 +239,11 @@ public class OrderServiceImpl implements OrderService {
       orderTotalPrice -= discount;
     }
     if (getLoggedUser().getAppliedDiscount() != null) {
-      System.out.println("Order total price before discount : " + orderTotalPrice);
-      double discount = getLoggedUser().getAppliedDiscount() * 0.01;
-      System.out.println("User discount" + discount);
+
+
       double customerAppliedDiscount =
           orderTotalPrice * (getLoggedUser().getAppliedDiscount() * 0.01);
-      System.out.println("Discounted amount" + customerAppliedDiscount);
-      System.out.println(Double.parseDouble(decimalFormat.format(customerAppliedDiscount)));
       orderTotalPrice -= customerAppliedDiscount;
-      System.out.println("Price after discount" + orderTotalPrice);
-      System.out.println(Double.parseDouble(decimalFormat.format(orderTotalPrice)));
     }
 
     double totalPriceWithVAT = orderTotalPrice * 1.2;

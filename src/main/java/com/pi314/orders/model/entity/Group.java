@@ -1,7 +1,6 @@
 package com.pi314.orders.model.entity;
 
 import jakarta.persistence.*;
-import java.util.*;
 import lombok.*;
 
 @Entity
@@ -20,11 +19,13 @@ public class Group {
   private Long handleId;
   private Long folioId;
   private Long orderId;
-  private String detailType;
+  @OneToOne
+  private Type detailType;
   private double groupTotalSqrt;
   private Double groupTotalPrice;
   private Long height;
   private Long width;
+  private Long length;
   private Double number;
   private Double matPrice;
   private boolean isBothSidesLaminated;
