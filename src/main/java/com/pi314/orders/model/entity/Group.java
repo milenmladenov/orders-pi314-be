@@ -29,4 +29,7 @@ public class Group {
   private Double number;
   private Double matPrice;
   private boolean isBothSidesLaminated;
+  private String deliveryAddress;
+  private Double discount;
+  private String note;
 }

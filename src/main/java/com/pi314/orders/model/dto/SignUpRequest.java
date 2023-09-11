@@ -20,5 +20,6 @@ public class SignUpRequest {
   private boolean isDdsRegistered;
   private String mol;
   private Integer postCode;
-  private List<OrderAddress> orderAddressList;
+  private String orderAddress;
+
 }

@@ -39,6 +39,6 @@ public class User {
 
   private Integer appliedDiscount;
 
-  @OneToMany private List<OrderAddress> orderAddressList;
+  private String orderAddress;
   @OneToMany private List<Order> orders;
 }

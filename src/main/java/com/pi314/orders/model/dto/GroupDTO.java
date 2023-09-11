@@ -20,4 +20,7 @@ public class GroupDTO {
   private boolean isBothSidesLaminated;
   private double groupTotalPrice;
   private TypeDTO detailType;
+  private String deliveryAddress;
+  private Double discount;
+  private String note;
 }

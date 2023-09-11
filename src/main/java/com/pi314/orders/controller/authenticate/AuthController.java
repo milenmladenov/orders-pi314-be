@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.*;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
@@ -72,7 +74,7 @@ public class AuthController {
     user.setPhone(signUpRequest.getPhone());
     user.setCommunicationName(signUpRequest.getCommunicationName());
     user.setDdsRegistered(signUpRequest.isDdsRegistered());
-    user.setOrderAddressList(signUpRequest.getOrderAddressList());
+    user.setOrderAddress(signUpRequest.getOrderAddress());
     user.setPostCode(signUpRequest.getPostCode());
     user.setCompanyAddress(signUpRequest.getCompanyAddress());
 

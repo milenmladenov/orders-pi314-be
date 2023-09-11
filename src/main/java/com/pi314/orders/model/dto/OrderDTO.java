@@ -19,5 +19,7 @@ public class OrderDTO {
 
   private LocalDate createdAt;
   private Double totalPrice;
+  private String note;
+  private String deliveryAddress;
 
 }

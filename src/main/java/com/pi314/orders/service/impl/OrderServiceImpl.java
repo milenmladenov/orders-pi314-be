@@ -59,7 +59,8 @@ public class OrderServiceImpl implements OrderService {
             orderRequestDTO.getGroups(),
             calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
             getLoggedUser().getAppliedDiscount(),
-            handlePrice);
+            handlePrice,
+            getLoggedUser().getOrderAddress());
     Order order =
         Order.builder()
             .user(getLoggedUser())
@@ -68,6 +69,9 @@ public class OrderServiceImpl implements OrderService {
             .totalPrice(orderResponseDTO.totalPrice())
             .createdAt(LocalDate.now())
             .groups(groups)
+            .note(orderRequestDTO.getNote())
+            .discount(orderRequestDTO.getDiscount())
+            .deliveryAddress(orderRequestDTO.getDeliveryAddress())
             .build();
     orderRepository.save(order);
 
@@ -88,7 +92,8 @@ public class OrderServiceImpl implements OrderService {
         orderRequestDTO.getGroups(),
         calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
         getLoggedUser().getAppliedDiscount(),
-        handlePrice);
+        handlePrice,
+        getLoggedUser().getOrderAddress());
   }
 
   @Override
@@ -194,8 +199,8 @@ public class OrderServiceImpl implements OrderService {
 
       double height = group.getHeight() / 1000.0;
       double width = group.getWidth() / 1000.0;
-      double squareMeters = (height * width) * groupDTO.getNumber() ;
-      totalSquareMeters += squareMeters ;
+      double squareMeters = (height * width) * groupDTO.getNumber();
+      totalSquareMeters += squareMeters;
       System.out.println(totalSquareMeters);
       double doorPrice = groupDTO.getDoor() != null ? groupDTO.getDoor().getPrice() : 0;
       double modelPrice = groupDTO.getModel() != null ? groupDTO.getModel().getPrice() : 0;
@@ -204,20 +209,21 @@ public class OrderServiceImpl implements OrderService {
       double profilPrice = groupDTO.getProfil() != null ? groupDTO.getProfil().getPrice() : 0;
 
       if (!groupDTO.getDetailType().getMaterial().equals("Корниз")
-          && !(groupDTO.getDetailType().getMaterial().equals("Пиластър"))){
+          && !(groupDTO.getDetailType().getMaterial().equals("Пиластър"))) {
         groupTotalPrice +=
-            ((squareMeters * (doorPrice + modelPrice + folioPrice)) + handlePrice + profilPrice)
-                ;
+            ((squareMeters * (doorPrice + modelPrice + folioPrice)) + handlePrice + profilPrice);
       }
 
-      if (groupDTO.getDetailType().getMaterial().equals("Корниз") ){
+      if (groupDTO.getDetailType().getMaterial().equals("Корниз")) {
         if (groupDTO.getLength() == 2360) {
-        groupTotalPrice += groupDTO.getNumber() * 76;}
-        if (group.getLength() == 1160){
-          groupTotalPrice += groupDTO.getNumber() * 38;}
+          groupTotalPrice += groupDTO.getNumber() * 76;
         }
+        if (group.getLength() == 1160) {
+          groupTotalPrice += groupDTO.getNumber() * 38;
+        }
+      }
 
-      if (groupDTO.getDetailType().getMaterial().equals("Пиластър") ) {
+      if (groupDTO.getDetailType().getMaterial().equals("Пиластър")) {
         groupTotalPrice += height * 12;
       }
       groupList.add(groupDTO);
@@ -233,13 +239,15 @@ public class OrderServiceImpl implements OrderService {
     if (totalSquareMeters <= 1.5) {
       orderTotalPrice *= 1.3;
     }
-
-    if (orderType == OrderType.BY_USER) {
+    if (orderRequestDTO.getDiscount() != null && (orderRequestDTO.getDiscount() > 0)) {
+      double discount = orderTotalPrice * (orderRequestDTO.getDiscount() * 0.01);
+      orderTotalPrice -= discount;
+    }
+    if (orderType == OrderType.BY_USER && getLoggedUser().getAppliedDiscount() == null) {
       double discount = orderTotalPrice * 0.05;
       orderTotalPrice -= discount;
     }
     if (getLoggedUser().getAppliedDiscount() != null) {
-
 
       double customerAppliedDiscount =
           orderTotalPrice * (getLoggedUser().getAppliedDiscount() * 0.01);

@@ -20,6 +20,9 @@ public class Order {
   private Double totalSqrt;
   private LocalDate createdAt;
   private LocalDate paidAt;
+  private String note;
+  private String deliveryAddress;
+  private Double discount;
 
   @OneToMany(cascade = CascadeType.ALL)
   private List<Group> groups;

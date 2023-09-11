@@ -7,5 +7,7 @@ import lombok.*;
 @Data
 public class OrderRequestDTO {
   private List<GroupDTO> groups;
-  private String username;
+  private String note;
+  private String deliveryAddress;
+  private Double discount;
 }
