@@ -13,6 +13,7 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.*;
 import lombok.*;
+import org.springframework.beans.*;
 import org.springframework.stereotype.*;
 
 @Service
@@ -22,20 +23,7 @@ public class OrderServiceImpl implements OrderService {
   private final UserService userService;
   private final OrderRepository orderRepository;
   private final GroupService groupService;
-  List<String> kornizi = List.of("К1 – 68мм височина", "К2 – 70мм височина", "К3 – 80мм височина");
-  List<String> pilastri =
-      List.of(
-          "Пиластър - P1",
-          "Пиластър - P2",
-          "Пиластър - P3",
-          "Пиластър - P4",
-          "Пиластър - P5",
-          "Пиластър - P6",
-          "Пиластър - P7",
-          "Пиластър - P8",
-          "Пиластър - P9",
-          "Пиластър - P10");
-  // Calculate the order total price and return it.
+
 
   @Override
   public OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO) {
@@ -83,10 +71,7 @@ public class OrderServiceImpl implements OrderService {
     DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
     Double handlePrice =
-        Double.parseDouble(
-            decimalFormat.format(
-                groupService.getHandlePrice(
-                    orderRequestDTO.getGroups().get(0).getHandle().getName())));
+        Double.parseDouble(decimalFormat.format(groupService.getHandlePrice("дръжка H1")));
 
     return new OrderResponseDTO(
         orderRequestDTO.getGroups(),
@@ -137,10 +122,34 @@ public class OrderServiceImpl implements OrderService {
 
   @Override
   public OrderDTO returnOrderById(Long orderId) {
+    DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+    Double handlePrice =
+        Double.parseDouble(decimalFormat.format(groupService.getHandlePrice("дръжка H1")));
     List<Order> order = orderRepository.findById(orderId).stream().toList();
     List<OrderDTO> allOrders = modelMapperService.mapList(order, OrderDTO.class);
     mapOrderGroups(order, allOrders);
+    allOrders.get(0).setHandlePrice(handlePrice);
     return allOrders.get(0);
+  }
+
+  @Override
+  public void editOrder(OrderRequestDTO orderRequestDTO,Long orderId) {
+    Order orderEntity = orderRepository.findById(orderId).orElseThrow();
+    List<Group> groups = new ArrayList<>();
+    List<Double> groupTotalPrices =
+            calculatePrices(orderRequestDTO, setOrderType()).getGroupTotalPrices();
+
+    for (int i = 0; i < orderRequestDTO.getGroups().size(); i++) {
+      GroupDTO group = orderRequestDTO.getGroups().get(i);
+      double groupTotalPrice = groupTotalPrices.get(i); // Get the total price for this group
+
+      Group savedGroup = groupService.buildGroup(group, groupTotalPrice);
+      groups.add(savedGroup);
+    }
+    orderEntity.setGroups(groups);
+    orderEntity.setTotalPrice(calculatePrices(orderRequestDTO,setOrderType()).getOrderTotalPrice());
+    orderRepository.save(orderEntity);
   }
 
   private void mapOrderGroups(List<Order> allOrdersFromDB, List<OrderDTO> allOrders) {

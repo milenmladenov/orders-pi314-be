@@ -45,6 +45,12 @@ public class OrderController {
     return orderService.returnOrderById(orderId);
   }
 
+  @PutMapping("/edit-order/{orderId}")
+  public void editOrder(@RequestBody OrderRequestDTO orderRequestDTO,@PathVariable Long  orderId){
+    orderService.editOrder(orderRequestDTO,orderId);
+  }
+
+
   @GetMapping("/door")
   public Door door(@RequestBody String name) {
     return doorService.findByName(name);

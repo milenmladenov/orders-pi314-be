@@ -103,12 +103,42 @@ public class GroupServiceImpl implements GroupService {
         .width(group.getWidth())
         .length(group.getLength())
         .deliveryAddress(group.getDeliveryAddress())
-        .discount(group.getDiscount()).note(group.getNote())
+        .discount(group.getDiscount())
+        .note(group.getNote())
         .matPrice(group.getMatPrice())
         .groupTotalPrice(group.getGroupTotalPrice())
         .detailType(modelMapperService.map(group.getDetailType(), TypeDTO.class))
         .isBothSidesLaminated(group.isBothSidesLaminated())
         .number(group.getNumber())
+        .build();
+  }
+
+  @Override
+  public Group buildGroup(GroupDTO groupDTO, double groupTotalPrice) {
+    Door door = doorService.findByName(groupDTO.getDoor().getName());
+    Model model = modelService.findByName(groupDTO.getModel().getName());
+    Handle handle = handleService.findByName(groupDTO.getHandle().getName());
+    Folio folio = folioService.findByName(groupDTO.getFolio().getName());
+    Profil profil = profilService.findByName(groupDTO.getProfil().getName());
+    Type detailType = typeService.save(groupDTO);
+    return Group.builder()
+        .modelId(model.getId())
+        .doorId(door.getId())
+        .profilId(profil.getId())
+        .folioId(folio.getId())
+        .handleId(handle.getId())
+        .height(groupDTO.getHeight())
+        .width(groupDTO.getWidth())
+        .length(groupDTO.getLength())
+        .number(groupDTO.getNumber())
+        .deliveryAddress(groupDTO.getDeliveryAddress())
+        .note(groupDTO.getNote())
+        .discount(groupDTO.getDiscount())
+        .isBothSidesLaminated(groupDTO.isBothSidesLaminated())
+        .groupTotalPrice(groupTotalPrice)
+        .detailType(detailType)
+        .groupTotalSqrt(
+            (((double) groupDTO.getHeight() / 1000) * ((double) groupDTO.getWidth() / 1000)))
         .build();
   }
 
