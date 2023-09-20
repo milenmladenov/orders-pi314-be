@@ -42,19 +42,12 @@ public class OrderServiceImpl implements OrderService {
     Double handlePrice =
         groupService.getHandlePrice(orderRequestDTO.getGroups().get(0).getHandle().getName());
 
-    OrderResponseDTO orderResponseDTO =
-        new OrderResponseDTO(
-            orderRequestDTO.getGroups(),
-            calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
-            getLoggedUser().getAppliedDiscount(),
-            handlePrice,
-            getLoggedUser().getOrderAddress());
     Order order =
         Order.builder()
             .user(getLoggedUser())
             .type(setOrderType())
             .status(OrderStatus.CREATED)
-            .totalPrice(orderResponseDTO.totalPrice())
+            .totalPrice(calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice())
             .createdAt(LocalDate.now())
             .groups(groups)
             .note(orderRequestDTO.getNote())
@@ -62,8 +55,12 @@ public class OrderServiceImpl implements OrderService {
             .deliveryAddress(orderRequestDTO.getDeliveryAddress())
             .build();
     orderRepository.save(order);
-
-    return orderResponseDTO;
+    return new OrderResponseDTO(
+            orderRequestDTO.getGroups(),
+            calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
+            getLoggedUser().getAppliedDiscount(),
+            handlePrice,
+            getLoggedUser().getOrderAddress(),order.getId());
   }
 
   @Override
@@ -78,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
         calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
         getLoggedUser().getAppliedDiscount(),
         handlePrice,
-        getLoggedUser().getOrderAddress());
+        getLoggedUser().getOrderAddress(),0L);
   }
 
   @Override

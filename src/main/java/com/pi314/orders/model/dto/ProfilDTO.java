@@ -6,5 +6,4 @@ import lombok.*;
 public class ProfilDTO {
     private String name;
     private Double price;
-
 }

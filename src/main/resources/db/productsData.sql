@@ -116,6 +116,7 @@ values
     (116, 'D1105', 77.50),   -- Starting with 'D' - price: 77.5
     (117, 'D1104', 77.50),
     (118, 'D1106', 77.50);
+    (134, 'Без', 0.0);
     (11, 'A806', 5.00),
 
 insert into door (id, name,price)
@@ -126,6 +127,7 @@ values
 
 insert into folio (id, name, price)
 values
+(757, 'Без', 0),
     (754, 'U1001-2', 25),
     (756, 'U1003-2 не е налично.', 25),
     (1, 'U1004-2 не е налично.', 25),
@@ -261,7 +263,7 @@ values
 insert into handle (id, name,price)
 values
     (1, 'Без Дръжка', 0.0),
-    (2, 'дръжка H1', 0.0);
+    (2, 'дръжка H1', 12.0);
 
 insert into profil (id, name,price)
 values

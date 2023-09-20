@@ -7,4 +7,5 @@ public record OrderResponseDTO(
     Double totalPrice,
     Integer appliedDiscount,
     Double handlePrice,
-    String deliveryAddress) {}
+    String deliveryAddress,Long createdOrderId) {}
+
