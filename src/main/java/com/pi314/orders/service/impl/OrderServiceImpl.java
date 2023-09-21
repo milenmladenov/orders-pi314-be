@@ -29,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     List<Group> groups = new ArrayList<>();
     List<Double> groupTotalPrices =
         calculatePrices(orderRequestDTO, setOrderType()).getGroupTotalPrices();
+    Double orderRequestDTODiscount = orderRequestDTO.getDiscount();
+    Double userDiscount = Double.valueOf(getLoggedUser().getAppliedDiscount());
 
     for (int i = 0; i < orderRequestDTO.getGroups().size(); i++) {
       GroupDTO group = orderRequestDTO.getGroups().get(i);
@@ -50,18 +52,18 @@ public class OrderServiceImpl implements OrderService {
             .createdAt(LocalDate.now())
             .groups(groups)
             .note(orderRequestDTO.getNote())
-            .discount(orderRequestDTO.getDiscount())
             .deliveryAddress(orderRequestDTO.getDeliveryAddress())
             .build();
-    if (orderRequestDTO.getDiscount() == 0) {
-      order.setDiscount(Double.valueOf(getLoggedUser().getAppliedDiscount()));
+    order.setDiscount(orderRequestDTODiscount);
+    if (orderRequestDTODiscount == 0) {
+      order.setDiscount(userDiscount);
     }
     orderRepository.save(order);
 
     return new OrderResponseDTO(
         orderRequestDTO.getGroups(),
         calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
-        getLoggedUser().getAppliedDiscount(),
+        order.getDiscount(),
         handlePrice,
         getLoggedUser().getOrderAddress(),
         order.getId());
@@ -77,7 +79,7 @@ public class OrderServiceImpl implements OrderService {
     return new OrderResponseDTO(
         orderRequestDTO.getGroups(),
         calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
-        getLoggedUser().getAppliedDiscount(),
+        0.0,
         handlePrice,
         getLoggedUser().getOrderAddress(),
         0L);
