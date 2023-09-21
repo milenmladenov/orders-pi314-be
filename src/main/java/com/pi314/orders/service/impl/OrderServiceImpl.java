@@ -24,7 +24,6 @@ public class OrderServiceImpl implements OrderService {
   private final OrderRepository orderRepository;
   private final GroupService groupService;
 
-
   @Override
   public OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO) {
     List<Group> groups = new ArrayList<>();
@@ -54,13 +53,18 @@ public class OrderServiceImpl implements OrderService {
             .discount(orderRequestDTO.getDiscount())
             .deliveryAddress(orderRequestDTO.getDeliveryAddress())
             .build();
+    if (orderRequestDTO.getDiscount() == 0) {
+      order.setDiscount(Double.valueOf(getLoggedUser().getAppliedDiscount()));
+    }
     orderRepository.save(order);
+
     return new OrderResponseDTO(
-            orderRequestDTO.getGroups(),
-            calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
-            getLoggedUser().getAppliedDiscount(),
-            handlePrice,
-            getLoggedUser().getOrderAddress(),order.getId());
+        orderRequestDTO.getGroups(),
+        calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
+        getLoggedUser().getAppliedDiscount(),
+        handlePrice,
+        getLoggedUser().getOrderAddress(),
+        order.getId());
   }
 
   @Override
@@ -75,7 +79,8 @@ public class OrderServiceImpl implements OrderService {
         calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
         getLoggedUser().getAppliedDiscount(),
         handlePrice,
-        getLoggedUser().getOrderAddress(),0L);
+        getLoggedUser().getOrderAddress(),
+        0L);
   }
 
   @Override
@@ -131,11 +136,11 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public void editOrder(OrderRequestDTO orderRequestDTO,Long orderId) {
+  public void editOrder(OrderRequestDTO orderRequestDTO, Long orderId) {
     Order orderEntity = orderRepository.findById(orderId).orElseThrow();
     List<Group> groups = new ArrayList<>();
     List<Double> groupTotalPrices =
-            calculatePrices(orderRequestDTO, setOrderType()).getGroupTotalPrices();
+        calculatePrices(orderRequestDTO, setOrderType()).getGroupTotalPrices();
 
     for (int i = 0; i < orderRequestDTO.getGroups().size(); i++) {
       GroupDTO group = orderRequestDTO.getGroups().get(i);
@@ -145,7 +150,8 @@ public class OrderServiceImpl implements OrderService {
       groups.add(savedGroup);
     }
     orderEntity.setGroups(groups);
-    orderEntity.setTotalPrice(calculatePrices(orderRequestDTO,setOrderType()).getOrderTotalPrice());
+    orderEntity.setTotalPrice(
+        calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice());
     orderRepository.save(orderEntity);
   }
 
@@ -233,11 +239,12 @@ public class OrderServiceImpl implements OrderService {
         groupTotalPrice += height * 12;
       }
       groupList.add(groupDTO);
-      group.setGroupTotalPrice(Double.parseDouble(decimalFormat.format(groupTotalPrice * 1.2)));
-      groupTotalPrices.add(group.getGroupTotalPrice());
+
       if (group.isBothSidesLaminated()) {
         groupTotalPrice *= 1.9;
       }
+      group.setGroupTotalPrice(Double.parseDouble(decimalFormat.format(groupTotalPrice * 1.2)));
+      groupTotalPrices.add(group.getGroupTotalPrice());
       orderTotalPrice += groupTotalPrice;
     }
     orderRequestDTO.setGroups(groupList);

@@ -8,19 +8,14 @@ import java.util.*;
 @Data
 public class OrderDTO {
   private Long id;
-
   private List<GroupDTO> groups;
-
   private UserDTO user;
-
   private OrderStatus status;
-
   private OrderType type;
-
+  private Double discount;
   private LocalDate createdAt;
   private Double totalPrice;
   private String note;
   private String deliveryAddress;
   private Double handlePrice;
-
 }
