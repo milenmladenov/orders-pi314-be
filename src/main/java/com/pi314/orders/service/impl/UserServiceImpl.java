@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User register(UserDTO userInfo) {
-    User user = User.builder().email(userInfo.getEmail()).username(userInfo.getUsername()).build();
+    User user = User.builder().email(userInfo.getEmail()).username(userInfo.getUsername()).appliedDiscount(0).build();
     return userRepository.save(user);
   }
 

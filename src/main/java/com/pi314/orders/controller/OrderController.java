@@ -4,10 +4,12 @@ import com.pi314.orders.enums.*;
 import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
 import com.pi314.orders.service.*;
+import jakarta.mail.MessagingException;
 import lombok.*;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @RestController
@@ -19,7 +21,7 @@ public class OrderController {
   private final ModelMapperService modelMapperService;
 
   @PostMapping("/new-order")
-  public OrderResponseDTO newOrder(@RequestBody OrderRequestDTO orderRequestDTO) {
+  public OrderResponseDTO newOrder(@RequestBody OrderRequestDTO orderRequestDTO) throws MessagingException, UnsupportedEncodingException {
     return orderService.createNewOrder(orderRequestDTO);
   }
 

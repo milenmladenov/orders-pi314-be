@@ -3,11 +3,14 @@ package com.pi314.orders.service;
 import com.pi314.orders.enums.*;
 import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
+import jakarta.mail.MessagingException;
+
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public interface OrderService {
 
-  OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO);
+  OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO) throws MessagingException, UnsupportedEncodingException;
 
   OrderResponseDTO preflightNewOrder(OrderRequestDTO orderRequestDTO);
 

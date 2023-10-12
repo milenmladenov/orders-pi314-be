@@ -1,10 +1,11 @@
 package com.pi314.orders.service;
 
+import com.pi314.orders.model.entity.Order;
 import jakarta.mail.*;
 
 import java.io.*;
 
 public interface EmailSenderService {
 
-    void sendCreatedOrderEmail(String recipientEmail) throws MessagingException, UnsupportedEncodingException;
+    void sendCreatedOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException;
 }

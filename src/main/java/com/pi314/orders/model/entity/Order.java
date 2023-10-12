@@ -23,6 +23,7 @@ public class Order {
   private String note;
   private String deliveryAddress;
   private Double discount;
+  private String orderUuid;
 
   @OneToMany(cascade = CascadeType.ALL)
   private List<Group> groups;
