@@ -19,10 +19,25 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             "\n" +
             "<p>Поръчка с No.%s от дата: %s за изработване на вратички е изпратена успешно за обработка и ще бъде потвърдена в рамките на един работен ден.<p>\n" +
             "\n" +
-            "<p><a href=\"http://localhost:3000/app/orders/%s#pdf-button\">Изтегли PDF<a><p>\n" +
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s#pdf-button\">Изтегли PDF<a><p>\n" +
             "\n" +
-            "<p><a href=\"http://localhost:3000/app/orders/%s\">Към поръчката<a><p>";
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s\">Към поръчката<a><p>";
 
+    private String ORDER_WITH_WORKING_ON_STATUS_EMAIL_CONTENT = "<p>Здравейте,<p>\n" +
+            "\n" +
+            "<p>Поръчка с No.%s от дата: %s вече се изпълнява и не са възможни корекции по нея. Очаквайте вратичките да бъдат доставени на посочения от Вас адрес на %s.<p>\n" +
+            "\n" +
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s#pdf-button\">Изтегли PDF<a><p>\n" +
+            "\n" +
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s\">Към поръчката<a><p>";
+
+    private String ORDER_WITH_DONE_STATUS_EMAIL_CONTENT = "<p>Здравейте,<p>\n" +
+            "\n" +
+            "<p>Поръчка с No.%s от дата: %s е изпълнена и ще бъде доставена на посочения от вас адрес за доставка през утрешния ден.<p>\n" +
+            "\n" +
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s#pdf-button\">Изтегли PDF<a><p>\n" +
+            "\n" +
+            "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s\">Към поръчката<a><p>";
     private final JavaMailSender javaMailSender;
 
     @Override
@@ -35,5 +50,28 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         helper.setSubject(String.format("Поръчка с No.%s за изработване на вратички е изпратена успешно", order.getOrderUuid()));
         helper.setText(String.format(NEW_CREATED_ORDER_EMAIL_CONTENT, order.getOrderUuid(), order.getCreatedAt(), order.getId(), order.getId()), true);
         javaMailSender.send(message);
+    }
+
+    @Override
+    public void sendWorkingOnOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("pi314", "Пи314");
+        helper.setTo(order.getUser().getEmail());
+        helper.setSubject(String.format("Поръчка с No.%s за изработване на вратички вече се изпълнява.", order.getOrderUuid()));
+        helper.setText(String.format(ORDER_WITH_WORKING_ON_STATUS_EMAIL_CONTENT, order.getOrderUuid(), order.getCreatedAt(), order.getCreatedAt().plusWeeks(3), order.getId(), order.getId()), true);
+        javaMailSender.send(message);
+    }
+
+    @Override
+    public void sendSentOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("pi314", "Пи314");
+        helper.setTo(order.getUser().getEmail());
+        helper.setSubject(String.format("Поръчка с No.%s за изработване на вратички вече е изпълнена.", order.getOrderUuid()));
+        helper.setText(String.format(ORDER_WITH_DONE_STATUS_EMAIL_CONTENT, order.getOrderUuid(), order.getCreatedAt(), order.getId(), order.getId()), true);
+        javaMailSender.send(message);
+
     }
 }

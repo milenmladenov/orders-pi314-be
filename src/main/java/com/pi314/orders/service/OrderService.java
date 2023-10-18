@@ -20,7 +20,7 @@ public interface OrderService {
 
   List<OrderDTO> returnAllOrdersPerUser();
 
-  void changeOrderStatus(Long orderId, OrderStatus status);
+  void changeOrderStatus(Long orderId, OrderStatus status) throws MessagingException, UnsupportedEncodingException;
 
   OrderDTO returnOrderById(Long orderId);
 

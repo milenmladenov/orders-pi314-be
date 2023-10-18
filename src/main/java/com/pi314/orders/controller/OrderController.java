@@ -31,7 +31,7 @@ public class OrderController {
   }
 
   @PostMapping("/{orderId}/change-status/{orderStatus}")
-  public void changeOrderStatus(@PathVariable Long orderId,@PathVariable OrderStatus orderStatus){
+  public void changeOrderStatus(@PathVariable Long orderId,@PathVariable OrderStatus orderStatus) throws MessagingException, UnsupportedEncodingException {
     orderService.changeOrderStatus(orderId,orderStatus);
   }
 

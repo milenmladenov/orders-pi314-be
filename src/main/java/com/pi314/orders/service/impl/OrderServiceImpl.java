@@ -1,8 +1,5 @@
 package com.pi314.orders.service.impl;
 
-import static com.pi314.orders.enums.UserRole.ADMIN;
-import static com.pi314.orders.enums.UserRole.USER;
-
 import com.pi314.orders.enums.*;
 import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
@@ -19,6 +16,8 @@ import jakarta.mail.MessagingException;
 import lombok.*;
 import org.springframework.beans.*;
 import org.springframework.stereotype.*;
+
+import static com.pi314.orders.enums.UserRole.*;
 
 @Service
 @RequiredArgsConstructor
@@ -60,12 +59,12 @@ public class OrderServiceImpl implements OrderService {
                         .deliveryAddress(orderRequestDTO.getDeliveryAddress())
                         .build();
         order.setDiscount(orderRequestDTODiscount);
-            if (orderRequestDTODiscount == 0 && userDiscount != 0) {
-                order.setDiscount(userDiscount);
-            }
+        if (orderRequestDTODiscount == 0 && userDiscount != 0) {
+            order.setDiscount(userDiscount);
+        }
         orderRepository.save(order);
-            order.setOrderUuid(order.getId().toString() + order.getCreatedAt().toString());
-            orderRepository.save(order);
+        order.setOrderUuid(order.getId().toString() + order.getCreatedAt().toString().replace("-", ""));
+        orderRepository.save(order);
         emailSenderService.sendCreatedOrderEmail(order);
         return new OrderResponseDTO(
                 orderRequestDTO.getGroups(),
@@ -73,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
                 order.getDiscount(),
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                order.getId());
+                order.getId(),order.getOrderUuid());
     }
 
     @Override
@@ -89,7 +88,7 @@ public class OrderServiceImpl implements OrderService {
                 0.0,
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                0L);
+                0L,"1234uuid");
     }
 
     @Override
@@ -125,10 +124,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void changeOrderStatus(Long orderId, OrderStatus status) {
+    public void changeOrderStatus(Long orderId, OrderStatus status) throws MessagingException, UnsupportedEncodingException {
         Order order = orderRepository.findById(orderId).orElseThrow();
         order.setStatus(status);
         orderRepository.save(order);
+        if (OrderStatus.WORKING_ON.equals(status)) {
+            emailSenderService.sendWorkingOnOrderEmail(order);
+        }
+        if (OrderStatus.DONE.equals(status)) {
+            emailSenderService.sendSentOrderEmail(order);
+        }
     }
 
     @Override

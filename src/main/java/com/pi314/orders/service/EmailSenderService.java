@@ -8,4 +8,6 @@ import java.io.*;
 public interface EmailSenderService {
 
     void sendCreatedOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException;
+    void sendWorkingOnOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException;
+    void sendSentOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException;
 }
