@@ -72,23 +72,25 @@ public class OrderServiceImpl implements OrderService {
                 order.getDiscount(),
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                order.getId(),order.getOrderUuid());
+                order.getId(),order.getOrderUuid(),0.0,orderRequestDTO.getGroups().get(0).getDoor().getName());
     }
 
     @Override
     public OrderResponseDTO preflightNewOrder(OrderRequestDTO orderRequestDTO) {
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
-
+Double totalElementNumbers = 0.0;
         Double handlePrice =
                 Double.parseDouble(decimalFormat.format(groupService.getHandlePrice("дръжка H1")));
-
+        for (GroupDTO group : orderRequestDTO.getGroups()) {
+            totalElementNumbers += group.getNumber();
+        }
         return new OrderResponseDTO(
                 orderRequestDTO.getGroups(),
                 calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice(),
                 0.0,
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                0L,"1234uuid");
+                0L,"1234uuid",totalElementNumbers,orderRequestDTO.getGroups().get(0).getDoor().getName());
     }
 
     @Override
@@ -205,6 +207,7 @@ public class OrderServiceImpl implements OrderService {
         List<Double> groupTotalPrices = new ArrayList<>();
         double orderTotalPrice = 0;
         double totalSquareMeters = 0;
+        double totalElementNumbers = 0;
 
         List<GroupDTO> groupList = new ArrayList<>();
         for (GroupDTO group : orderRequestDTO.getGroups()) {
@@ -262,6 +265,8 @@ public class OrderServiceImpl implements OrderService {
             orderTotalPrice += groupTotalPrice;
         }
         orderRequestDTO.setGroups(groupList);
+
+
 
         if (totalSquareMeters <= 1.5) {
             orderTotalPrice *= 1.3;

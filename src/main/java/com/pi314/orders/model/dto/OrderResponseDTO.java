@@ -7,5 +7,5 @@ public record OrderResponseDTO(
         Double totalPrice,
         Double appliedDiscount,
         Double handlePrice,
-        String deliveryAddress, Long createdOrderId, String orderUuid) {}
+        String deliveryAddress, Long createdOrderId, String orderUuid,Double totalElements,String doorName) {}
 

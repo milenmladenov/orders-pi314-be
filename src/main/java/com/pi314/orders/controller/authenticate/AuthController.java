@@ -77,6 +77,7 @@ public class AuthController {
     user.setOrderAddress(signUpRequest.getOrderAddress());
     user.setPostCode(signUpRequest.getPostCode());
     user.setCompanyAddress(signUpRequest.getCompanyAddress());
+    user.setAppliedDiscount(0);
 
     if (signUpRequest.getUsername().equals("oadmin")) {
       user.setRole(SecurityConfig.ADMIN);
