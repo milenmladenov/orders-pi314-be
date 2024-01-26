@@ -168,6 +168,7 @@ Double totalElementNumbers = 0.0;
         orderEntity.setGroups(groups);
         orderEntity.setTotalPrice(
                 calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice());
+        orderEntity.setNote(orderRequestDTO.getNote());
         orderRepository.save(orderEntity);
     }
 
