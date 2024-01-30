@@ -165,6 +165,7 @@ Double totalElementNumbers = 0.0;
             Group savedGroup = groupService.buildGroup(group, groupTotalPrice);
             groups.add(savedGroup);
         }
+        orderEntity.setNote(orderRequestDTO.getNote());
         orderEntity.setGroups(groups);
         orderEntity.setTotalPrice(
                 calculatePrices(orderRequestDTO, setOrderType()).getOrderTotalPrice());
