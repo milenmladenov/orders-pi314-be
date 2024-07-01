@@ -99,7 +99,7 @@ Double totalElementNumbers = 0.0;
     }
 
     @Override
-    public List<OrderDTO> returnAllOrders() {
+    public List<OrderDTO> returnAllOrders(String  startDate, String endDate) {
         List<Order> allOrdersFromDB = new ArrayList<>();
         if (Objects.equals(getLoggedUser().getRole(), ADMIN.toString())) {
             allOrdersFromDB = orderRepository.findAll();
@@ -107,9 +107,15 @@ Double totalElementNumbers = 0.0;
         if (Objects.equals(getLoggedUser().getRole(), USER.toString())) {
             allOrdersFromDB = orderRepository.findByUser(getLoggedUser());
         }
+
+        if (Objects.nonNull(startDate) ||  Objects.nonNull(endDate)){
+          LocalDate convertedStartDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(startDate)),ZoneOffset.UTC) ;
+            LocalDate convertedEndDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(endDate)),ZoneOffset.UTC) ;
+            allOrdersFromDB = orderRepository.findByCreatedAtBetween(convertedStartDate,convertedEndDate);
+        }
+
         List<OrderDTO> allOrders = modelMapperService.mapList(allOrdersFromDB, OrderDTO.class);
         mapOrderGroups(allOrdersFromDB, allOrders);
-        System.out.println(getLoggedUser().getRole());
         return allOrders.stream()
                 .sorted(Comparator.comparing(OrderDTO::getId).reversed())
                 .collect(Collectors.toList());

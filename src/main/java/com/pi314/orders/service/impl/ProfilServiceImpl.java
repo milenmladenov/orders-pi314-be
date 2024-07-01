@@ -25,6 +25,6 @@ public class ProfilServiceImpl implements ProfilService {
 
     @Override
     public List<Profil> findAll() {
-        return profilRepository.findAll();
+    return profilRepository.findAll();
     }
 }

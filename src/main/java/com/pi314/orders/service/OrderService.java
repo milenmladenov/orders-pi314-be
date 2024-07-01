@@ -6,6 +6,7 @@ import com.pi314.orders.model.entity.*;
 import jakarta.mail.MessagingException;
 
 import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.*;
 
 public interface OrderService {
@@ -16,7 +17,7 @@ public interface OrderService {
 
   OrderResponseDTO createNewGroup(OrderRequestDTO orderRequestDTO);
 
-  List<OrderDTO> returnAllOrders();
+  List<OrderDTO> returnAllOrders(String startDate, String endDate);
 
   List<OrderDTO> returnAllOrdersPerUser();
 

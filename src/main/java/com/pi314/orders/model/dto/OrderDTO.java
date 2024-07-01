@@ -4,6 +4,7 @@ import com.pi314.orders.enums.*;
 import lombok.*;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Data
@@ -20,5 +21,10 @@ public class OrderDTO {
     private String deliveryAddress;
     private Double handlePrice;
     private String orderUuid;
+
+
+    public LocalDate getLocalDate() {
+        return LocalDate.parse(createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+    }
 
 }
