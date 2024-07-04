@@ -13,6 +13,6 @@ public interface EmailSenderService {
     void sendSentOrderEmail(Order order) throws MessagingException, UnsupportedEncodingException;
 
     void sendActivateUserRequest(User user) throws MessagingException, UnsupportedEncodingException;
-    void sendUserIsActivatedEmail(User user);
+    void sendUserIsActivatedEmail(User user) throws MessagingException, UnsupportedEncodingException;
 
 }

@@ -279,7 +279,7 @@ public class OrderServiceImpl implements OrderService {
             }
 
             if (groupDTO.getDetailType().getMaterial().equals("Пиластър")) {
-                groupTotalPrice += height * 12;
+                groupTotalPrice += height * 12 * groupDTO.getNumber();
             }
             groupList.add(groupDTO);
 

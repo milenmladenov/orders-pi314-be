@@ -5,6 +5,7 @@ import com.pi314.orders.exception.*;
 import com.pi314.orders.model.dto.*;
 import com.pi314.orders.model.entity.*;
 import com.pi314.orders.service.*;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -42,7 +44,8 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest)
+            throws MessagingException, UnsupportedEncodingException {
         if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
             throw new DuplicatedUserInfoException(
                     String.format("Username %s already been used", signUpRequest.getUsername()));

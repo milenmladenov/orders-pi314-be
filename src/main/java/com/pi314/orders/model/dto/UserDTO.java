@@ -18,4 +18,5 @@ private Integer appliedDiscount;
   private boolean isDdsRegistered;
   private String mol;
   private Integer postCode;
+  private boolean active;
 }

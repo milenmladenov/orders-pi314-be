@@ -2,8 +2,10 @@ package com.pi314.orders.service;
 
 import com.pi314.orders.model.dto.UserDTO;
 import com.pi314.orders.model.entity.User;
+import jakarta.mail.MessagingException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 public interface UserService{
@@ -30,11 +32,11 @@ public interface UserService{
 
     List<UserDTO> getAllCustomers(String searchParam);
 
-    User saveUser(User user);
+    void saveUser(User user) throws MessagingException, UnsupportedEncodingException;
 
-    void activateUser(Long id);
+    void activateUser(Long id) throws MessagingException, UnsupportedEncodingException;
 
-    void deleteUser(User user);
+    void deleteUser(Long userId);
 
     UserDTO findById(Long customerId);
 
