@@ -29,7 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private final EmailSenderService emailSenderService;
 
     @Override
-    public OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO) throws MessagingException, UnsupportedEncodingException {
+    public OrderResponseDTO createNewOrder(OrderRequestDTO orderRequestDTO)
+            throws MessagingException, UnsupportedEncodingException {
         List<Group> groups = new ArrayList<>();
         List<Double> groupTotalPrices =
                 calculatePrices(orderRequestDTO, setOrderType()).getGroupTotalPrices();
@@ -72,13 +73,13 @@ public class OrderServiceImpl implements OrderService {
                 order.getDiscount(),
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                order.getId(),order.getOrderUuid(),0.0,orderRequestDTO.getGroups().get(0).getDoor().getName());
+                order.getId(), order.getOrderUuid(), 0.0, orderRequestDTO.getGroups().get(0).getDoor().getName());
     }
 
     @Override
     public OrderResponseDTO preflightNewOrder(OrderRequestDTO orderRequestDTO) {
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
-Double totalElementNumbers = 0.0;
+        Double totalElementNumbers = 0.0;
         Double handlePrice =
                 Double.parseDouble(decimalFormat.format(groupService.getHandlePrice("дръжка H1")));
         for (GroupDTO group : orderRequestDTO.getGroups()) {
@@ -90,7 +91,7 @@ Double totalElementNumbers = 0.0;
                 0.0,
                 handlePrice,
                 getLoggedUser().getOrderAddress(),
-                0L,"1234uuid",totalElementNumbers,orderRequestDTO.getGroups().get(0).getDoor().getName());
+                0L, "1234uuid", totalElementNumbers, orderRequestDTO.getGroups().get(0).getDoor().getName());
     }
 
     @Override
@@ -99,19 +100,15 @@ Double totalElementNumbers = 0.0;
     }
 
     @Override
-    public List<OrderDTO> returnAllOrders(String  startDate, String endDate) {
-        List<Order> allOrdersFromDB = new ArrayList<>();
-        if (Objects.equals(getLoggedUser().getRole(), ADMIN.toString())) {
-            allOrdersFromDB = orderRepository.findAll();
-        }
-        if (Objects.equals(getLoggedUser().getRole(), USER.toString())) {
-            allOrdersFromDB = orderRepository.findByUser(getLoggedUser());
-        }
+    public List<OrderDTO> returnAllOrders(String startDate, String endDate) {
 
-        if (Objects.nonNull(startDate) ||  Objects.nonNull(endDate)){
-          LocalDate convertedStartDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(startDate)),ZoneOffset.UTC) ;
-            LocalDate convertedEndDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(endDate)),ZoneOffset.UTC) ;
-            allOrdersFromDB = orderRepository.findByCreatedAtBetween(convertedStartDate,convertedEndDate);
+        LocalDate convertedStartDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(startDate)), ZoneOffset.UTC);
+        LocalDate convertedEndDate = LocalDate.ofInstant(Instant.ofEpochMilli(Long.parseLong(endDate)), ZoneOffset.UTC);
+        List<Order> allOrdersFromDB = orderRepository.findByCreatedAtBetween(convertedStartDate, convertedEndDate);
+
+        if (Objects.equals(getLoggedUser().getRole(), USER.toString())) {
+            allOrdersFromDB =
+                    orderRepository.findByUserAndCreatedAtBetween(getLoggedUser(), convertedStartDate, convertedEndDate);
         }
 
         List<OrderDTO> allOrders = modelMapperService.mapList(allOrdersFromDB, OrderDTO.class);
@@ -214,7 +211,6 @@ Double totalElementNumbers = 0.0;
         List<Double> groupTotalPrices = new ArrayList<>();
         double orderTotalPrice = 0;
         double totalSquareMeters = 0;
-        double totalElementNumbers = 0;
 
         List<GroupDTO> groupList = new ArrayList<>();
         for (GroupDTO group : orderRequestDTO.getGroups()) {
@@ -237,7 +233,6 @@ Double totalElementNumbers = 0.0;
             double width = group.getWidth() / 1000.0;
             double squareMeters = (height * width) * groupDTO.getNumber();
             totalSquareMeters += squareMeters;
-            System.out.println(totalSquareMeters);
             double doorPrice = groupDTO.getDoor() != null ? groupDTO.getDoor().getPrice() : 0;
             double modelPrice = groupDTO.getModel() != null ? groupDTO.getModel().getPrice() : 0;
             double folioPrice = groupDTO.getFolio() != null ? groupDTO.getFolio().getPrice() : 0;
@@ -245,16 +240,40 @@ Double totalElementNumbers = 0.0;
             double profilPrice = groupDTO.getProfil() != null ? groupDTO.getProfil().getPrice() : 0;
 
             if (!groupDTO.getDetailType().getMaterial().equals("Корниз")
-                    && !(groupDTO.getDetailType().getMaterial().equals("Пиластър"))) {
+                && !(groupDTO.getDetailType().getMaterial().equals("Пиластър"))) {
                 groupTotalPrice +=
                         ((squareMeters * (doorPrice + modelPrice + folioPrice)) + handlePrice + profilPrice);
             }
 
             if (groupDTO.getDetailType().getMaterial().equals("Корниз")) {
                 if (groupDTO.getLength() == 2360) {
+                    if (groupDTO.getDetailType().getType().equals("К1 – 68мм височина")) {
+                        group.setHeight(68L);
+                        group.setWidth(2360L);
+                    }
+                    if (groupDTO.getDetailType().getType().equals("К2 – 70мм височина")) {
+                        group.setHeight(70L);
+                        group.setWidth(2360L);
+                    }
+                    if (groupDTO.getDetailType().getType().equals("К3 – 80мм височина")) {
+                        group.setHeight(80L);
+                        group.setWidth(2360L);
+                    }
                     groupTotalPrice += groupDTO.getNumber() * 76;
                 }
                 if (group.getLength() == 1160) {
+                    if (groupDTO.getDetailType().getType().equals("К1 – 68мм височина")) {
+                        group.setHeight(68L);
+                        group.setWidth(1160L);
+                    }
+                    if (groupDTO.getDetailType().getType().equals("К2 – 70мм височина")) {
+                        group.setHeight(70L);
+                        group.setWidth(1160L);
+                    }
+                    if (groupDTO.getDetailType().getType().equals("К3 – 80мм височина")) {
+                        group.setHeight(80L);
+                        group.setWidth(1160L);
+                    }
                     groupTotalPrice += groupDTO.getNumber() * 38;
                 }
             }
@@ -272,7 +291,6 @@ Double totalElementNumbers = 0.0;
             orderTotalPrice += groupTotalPrice;
         }
         orderRequestDTO.setGroups(groupList);
-
 
 
         if (totalSquareMeters <= 1.5) {
@@ -294,8 +312,6 @@ Double totalElementNumbers = 0.0;
         }
 
         double totalPriceWithVAT = orderTotalPrice * 1.2;
-        System.out.println(
-                "Price after vat" + Double.parseDouble(decimalFormat.format(totalPriceWithVAT)));
 
         prices.setOrderTotalPrice(Double.parseDouble(decimalFormat.format(totalPriceWithVAT)));
         prices.setGroupTotalPrices(groupTotalPrices);

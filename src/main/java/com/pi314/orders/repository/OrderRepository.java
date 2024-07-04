@@ -12,5 +12,7 @@ import java.util.*;
 public interface OrderRepository extends JpaRepository<Order,Long> {
     List<Order> findByUser(User user);
 
+    List<Order> findByUserAndCreatedAtBetween(User user,LocalDate startDate, LocalDate endDate);
+
     List<Order> findByCreatedAtBetween(LocalDate startDate, LocalDate endDate);
 }

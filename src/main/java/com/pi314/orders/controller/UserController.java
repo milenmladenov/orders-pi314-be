@@ -27,4 +27,9 @@ public class UserController {
   public void setCustomerDiscount(@PathVariable Long customerId, @PathVariable Integer discount) {
     userService.setCustomerDiscount(customerId, discount);
   }
+
+  @PostMapping("activate-user/{userId}")
+  public void activateUser(@PathVariable Long userId){
+    userService.activateUser(userId);
+  }
 }

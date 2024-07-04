@@ -38,7 +38,7 @@ public class User {
   private String role;
 
   private Integer appliedDiscount;
-
+  private boolean active;
   private String orderAddress;
   @OneToMany private List<Order> orders;
 }

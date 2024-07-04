@@ -19,13 +19,20 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User register(UserDTO userInfo) {
-    User user = User.builder().email(userInfo.getEmail()).username(userInfo.getUsername()).appliedDiscount(0).build();
+    User user =
+            User.builder().email(userInfo.getEmail()).username(userInfo.getUsername()).appliedDiscount(0).active(false).build();
     return userRepository.save(user);
   }
 
   @Override
   public boolean authenticate(String email, String password) {
     return false;
+  }
+
+  @Override
+  public boolean isActivated(String username) {
+    User user = getUserByUsername(username).orElseThrow();
+      return user.isActive();
   }
 
   @Override
@@ -80,6 +87,13 @@ public class UserServiceImpl implements UserService {
   @Override
   public User saveUser(User user) {
     return userRepository.save(user);
+  }
+
+  @Override
+  public void activateUser(Long id) {
+    User user = userRepository.findById(id).orElseThrow();
+    user.setActive(true);
+    userRepository.save(user);
   }
 
   @Override

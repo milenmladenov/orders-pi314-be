@@ -1,6 +1,7 @@
 package com.pi314.orders.service.impl;
 
 import com.pi314.orders.model.entity.Order;
+import com.pi314.orders.model.entity.User;
 import com.pi314.orders.service.*;
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
@@ -23,7 +24,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             "\n" +
             "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s\">Към поръчката<a><p>";
 
-    private String ORDER_WITH_WORKING_ON_STATUS_EMAIL_CONTENT = "<p>Здравейте,<p>\n" +
+    private static final String ORDER_WITH_WORKING_ON_STATUS_EMAIL_CONTENT = "<p>Здравейте,<p>\n" +
             "\n" +
             "<p>Поръчка с No.%s от дата: %s вече се изпълнява и не са възможни корекции по нея. Очаквайте вратичките да бъдат доставени на посочения от Вас адрес на %s.<p>\n" +
             "\n" +
@@ -38,6 +39,7 @@ public class EmailSenderServiceImpl implements EmailSenderService {
             "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s#pdf-button\">Изтегли PDF<a><p>\n" +
             "\n" +
             "<p><a href=\"https://orders-pi314.netlify.app/app/orders/%s\">Към поръчката<a><p>";
+
     private final JavaMailSender javaMailSender;
 
     @Override
@@ -72,6 +74,22 @@ public class EmailSenderServiceImpl implements EmailSenderService {
         helper.setSubject(String.format("Поръчка с No.%s за изработване на вратички вече е изпълнена.", order.getOrderUuid()));
         helper.setText(String.format(ORDER_WITH_DONE_STATUS_EMAIL_CONTENT, order.getOrderUuid(), order.getCreatedAt(), order.getId(), order.getId()), true);
         javaMailSender.send(message);
+
+    }
+
+    @Override
+    public void sendActivateUserRequest(User user) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message);
+        helper.setFrom("pi314", "Пи314");
+        helper.setTo("office@pi314.bg");
+        helper.setSubject(String.format("Нов регистриран потребител %s", user.getUsername()));
+        helper.setText("test");
+        javaMailSender.send(message);
+
+    }
+    @Override
+    public void sendUserIsActivatedEmail(User user) {
 
     }
 }

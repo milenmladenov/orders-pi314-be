@@ -12,6 +12,8 @@ public interface UserService{
 
     boolean authenticate ( String email, String password);
 
+    boolean isActivated(String username);
+
     User findByEmail(String email);
 
     Optional<User> getLoggedUser();
@@ -29,6 +31,8 @@ public interface UserService{
     List<UserDTO> getAllCustomers(String searchParam);
 
     User saveUser(User user);
+
+    void activateUser(Long id);
 
     void deleteUser(User user);
 
